@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>신청 현황 | 서대문교회 도서신청</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">✝ 서대문교회</div>
+      <nav>
+        <a href="index.html">도서 신청</a>
+        <a href="status.html" class="active">신청 현황</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>📋 신청 현황</h1>
+      <p>도서 신청 처리 현황을 확인하세요.</p>
+    </section>
+
+    <section class="status-section">
+
+      <!-- 필터 -->
+      <div class="filter-bar">
+        <button class="filter-btn active" data-status="전체">전체</button>
+        <button class="filter-btn" data-status="신청중">🕐 신청중</button>
+        <button class="filter-btn" data-status="검토중">🔍 검토중</button>
+        <button class="filter-btn" data-status="구매완료">✅ 구매완료</button>
+        <button class="filter-btn" data-status="반려">❌ 반려</button>
+      </div>
+
+      <!-- 로딩 -->
+      <div id="loading" class="loading">데이터를 불러오는 중...</div>
+
+      <!-- 테이블 -->
+      <div id="tableWrap" class="hidden">
+        <table id="statusTable">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>신청일</th>
+              <th>도서명</th>
+              <th>저자</th>
+              <th>부서</th>
+              <th>상태</th>
+              <th>처리일</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <!-- 데이터 없음 -->
+      <div id="emptyMsg" class="empty-msg hidden">신청 내역이 없습니다.</div>
+
+    </section>
+  </main>
+
+  <footer>
+    <p>서대문교회 | 문의: 교회 사무실</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
