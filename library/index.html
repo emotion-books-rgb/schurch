@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도서관 - 서대문교회</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">📚 서대문교회 도서관</div>
+      <nav>
+        <a href="index.html" class="active">도서 목록</a>
+        <a href="mybooks.html">내 대출현황</a>
+        <a href="../books/index.html">도서 신청</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>교회 도서관</h1>
+    <p>신앙의 깊이를 더하는 책들을 만나보세요</p>
+  </div>
+
+  <main>
+    <!-- 통계 -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card">
+        <div class="stat-num" id="totalBooks">-</div>
+        <div class="stat-label">전체 도서</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="availableBooks">-</div>
+        <div class="stat-label">대출 가능</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="loanedBooks">-</div>
+        <div class="stat-label">대출 중</div>
+      </div>
+    </div>
+
+    <!-- 검색 -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="도서명, 저자, 출판사로 검색..." onkeydown="if(event.key==='Enter') searchBooks()">
+      <button onclick="searchBooks()">검색</button>
+    </div>
+
+    <!-- 분류 필터 -->
+    <div class="filter-bar" id="categoryFilter">
+      <button class="filter-btn active" onclick="filterCategory('all', this)">전체</button>
+    </div>
+
+    <!-- 도서 목록 -->
+    <div id="booksContainer">
+      <div class="loading">도서 목록을 불러오는 중...</div>
+    </div>
+  </main>
+
+  <footer>
+    <p>서대문교회 도서관 | 문의: 교회 사무실</p>
+  </footer>
+
+  <!-- 대출 신청 모달 -->
+  <div id="loanModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+    <div style="background:white; max-width:480px; margin:40px auto; border-radius:12px; padding:28px; position:relative;">
+      <h2 style="margin-bottom:20px; color:#3a5a3a;">📖 대출 신청</h2>
+      <div id="modalBookInfo" style="background:#f8f9f8; padding:14px; border-radius:8px; margin-bottom:20px; font-size:0.9rem;"></div>
+      <div class="form-section">
+        <div class="form-group">
+          <label>이름 <span class="required">*</span></label>
+          <input type="text" id="loanName" placeholder="홍길동">
+        </div>
+        <div class="form-group">
+          <label>연락처 <span class="required">*</span></label>
+          <input type="tel" id="loanPhone" placeholder="010-0000-0000">
+        </div>
+        <div class="form-group">
+          <label>소속 부서</label>
+          <select id="loanDept">
+            <option value="">선택 안함</option>
+            <option>학생부</option>
+            <option>주일학교</option>
+            <option>청년부</option>
+            <option>장년부</option>
+          </select>
+        </div>
+      </div>
+      <div id="loanMsg"></div>
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button class="btn btn-primary" onclick="submitLoan()" id="loanSubmitBtn">대출 신청</button>
+        <button class="btn btn-secondary" onclick="closeModal()">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  <script>
+    loadBooks();
+  </script>
+</body>
+</html>

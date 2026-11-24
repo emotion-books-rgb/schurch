@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내 대출현황 - 서대문교회 도서관</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">📚 서대문교회 도서관</div>
+      <nav>
+        <a href="index.html">도서 목록</a>
+        <a href="mybooks.html" class="active">내 대출현황</a>
+        <a href="../books/index.html">도서 신청</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>내 대출현황</h1>
+    <p>연락처로 대출 중인 도서를 확인하세요</p>
+  </div>
+
+  <main>
+    <div class="card" style="max-width:480px;">
+      <h2>대출 조회</h2>
+      <div class="form-group">
+        <label>연락처 <span class="required">*</span></label>
+        <input type="tel" id="searchPhone" placeholder="010-0000-0000" onkeydown="if(event.key==='Enter') searchMyBooks()">
+      </div>
+      <button class="btn btn-primary" onclick="searchMyBooks()">조회하기</button>
+    </div>
+
+    <div id="resultArea" class="hidden">
+      <div class="stats-row" style="margin-top:20px;">
+        <div class="stat-card">
+          <div class="stat-num" id="myLoanCount">0</div>
+          <div class="stat-label">대출 중</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="myOverdueCount">0</div>
+          <div class="stat-label">연체</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="myHistoryCount">0</div>
+          <div class="stat-label">반납 완료</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>대출 중인 도서</h2>
+        <div class="table-wrap">
+          <table id="activeLoansTable">
+            <thead>
+              <tr>
+                <th>도서명</th>
+                <th>청구기호</th>
+                <th>대출일</th>
+                <th>반납 예정일</th>
+                <th>상태</th>
+              </tr>
+            </thead>
+            <tbody id="activeLoansBody">
+              <tr><td colspan="5" class="empty">대출 중인 도서가 없습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>대출 이력</h2>
+        <div class="table-wrap">
+          <table id="historyTable">
+            <thead>
+              <tr>
+                <th>도서명</th>
+                <th>대출일</th>
+                <th>반납일</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              <tr><td colspan="3" class="empty">대출 이력이 없습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="notFoundMsg" class="hidden msg-error" style="max-width:480px; margin-top:16px;">
+      해당 연락처로 조회된 대출 기록이 없습니다.
+    </div>
+  </main>
+
+  <footer>
+    <p>서대문교회 도서관 | 반납 문의: 교회 사무실</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
