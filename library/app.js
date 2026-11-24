@@ -373,6 +373,28 @@ function updateCallNum() {
   const serial = document.getElementById('bookSerial')?.value || '';
   const callNum = document.getElementById('bookCallNum');
   if (callNum) callNum.value = cat && author && serial ? `${cat}/${author}/${serial.padStart(3,'0')}` : '';
+  // 분류+저자 첫글자 모두 입력됐을 때 다음 번호 자동 추천
+  if (cat && author && !serial) suggestNextSerial(cat, author);
+}
+
+async function suggestNextSerial(cat, author) {
+  try {
+    const books = await fetchSheet(CONFIG.SHEETS.BOOKS);
+    const prefix = `${cat}/${author}/`;
+    const nums = books
+      .map(b => b['청구기호'] || '')
+      .filter(c => c.startsWith(prefix))
+      .map(c => parseInt(c.replace(prefix, '')) || 0);
+    const next = nums.length ? Math.max(...nums) + 1 : 1;
+    const serialEl = document.getElementById('bookSerial');
+    if (serialEl && !serialEl.value) {
+      serialEl.value = String(next).padStart(3, '0');
+      updateCallNum();
+      // 추천 안내 표시
+      document.getElementById('addBookMsg').innerHTML =
+        `<div style="padding:8px 12px;background:#e8f0e8;border-radius:6px;font-size:0.85rem;color:#3a5a3a;">💡 다음 일련번호 <strong>${String(next).padStart(3,'0')}</strong> 자동 입력됨</div>`;
+    }
+  } catch (e) { /* 무시 */ }
 }
 
 async function addBook() {
@@ -384,6 +406,19 @@ async function addBook() {
     document.getElementById('addBookMsg').innerHTML = '<div class="msg-error">분류, 저자 첫글자, 일련번호, 도서명, 저자를 입력해주세요.</div>';
     return;
   }
+
+  // 중복 체크
+  document.getElementById('addBookMsg').innerHTML = '<div style="padding:8px 12px;background:#fff3cd;border-radius:6px;font-size:0.85rem;">🔍 중복 확인 중...</div>';
+  try {
+    const books = await fetchSheet(CONFIG.SHEETS.BOOKS);
+    const dup = books.find(b => (b['청구기호'] || '').trim() === callNum);
+    if (dup) {
+      document.getElementById('addBookMsg').innerHTML =
+        `<div class="msg-error">⚠️ 청구기호 <strong>${callNum}</strong> 가 이미 존재합니다.<br>도서명: ${dup['도서명']} / 저자: ${dup['저자']}</div>`;
+      return;
+    }
+  } catch (e) { /* 중복체크 실패시 그냥 진행 */ }
+
   const btn = document.getElementById('addBookBtn');
   btn.disabled = true; btn.textContent = '등록 중...';
   const data = {
@@ -406,7 +441,7 @@ async function addBook() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    document.getElementById('addBookMsg').innerHTML = '<div class="msg-success">도서가 등록되었습니다!</div>';
+    document.getElementById('addBookMsg').innerHTML = '<div class="msg-success">✅ 도서가 등록되었습니다!</div>';
     ['bookTitle','bookAuthor','bookPublisher','bookYear','bookBuyDate','bookMemo','bookAuthorCode','bookSerial'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
