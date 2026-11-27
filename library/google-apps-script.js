@@ -15,6 +15,7 @@ function doPost(e) {
     if (action === 'approveLoan') return approveLoan(data);
     if (action === 'rejectLoan') return rejectLoan(data);
     if (action === 'returnBook') return returnBook(data);
+    if (action === 'updateBook') return updateBook(data);
 
     return ok('unknown action');
   } catch (err) {
@@ -34,6 +35,39 @@ function addBook(data) {
     data.메모||'', '대출가능', data.등록일 || today()
   ]);
   return ok('도서 등록 완료');
+}
+
+// ── 도서 정보 변경 ──
+function updateBook(data) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sh = ss.getSheetByName('도서목록');
+  if (!sh) return error('도서목록 시트 없음');
+
+  const rows = sh.getDataRange().getValues();
+  const headers = rows[0]; // ['청구기호','분류코드','도서명','저자','출판사','출판연도','구입일','메모','상태','등록일']
+  const colIdx = (name) => headers.indexOf(name);
+
+  for (let i = 1; i < rows.length; i++) {
+    if (String(rows[i][0]).trim() === String(data.청구기호).trim()) {
+      const fields = {
+        '도서명': data.도서명,
+        '저자': data.저자,
+        '출판사': data.출판사,
+        '출판연도': data.출판연도,
+        '분류코드': data.분류코드,
+        '상태': data.상태,
+        '메모': data.메모
+      };
+      for (const [field, value] of Object.entries(fields)) {
+        const col = colIdx(field);
+        if (col >= 0 && value !== undefined && value !== null) {
+          sh.getRange(i + 1, col + 1).setValue(value);
+        }
+      }
+      return ok('도서 정보 변경 완료');
+    }
+  }
+  return error('해당 청구기호를 찾을 수 없습니다: ' + data.청구기호);
 }
 
 // ── 대출 신청 ──

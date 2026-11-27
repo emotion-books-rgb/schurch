@@ -455,6 +455,107 @@ async function addBook() {
   }
 }
 
+// ===== 도서 변경 탭 =====
+let editTargetBook = null; // 현재 선택된 수정 대상 도서
+
+function searchEditBook() {
+  const q = document.getElementById('editSearch').value.trim().toLowerCase();
+  const resultEl = document.getElementById('editSearchResult');
+  const formEl = document.getElementById('editForm');
+  if (!q) { resultEl.innerHTML = ''; formEl.style.display = 'none'; return; }
+
+  const matched = adminBooks.filter(b =>
+    (b['청구기호'] || '').toLowerCase().includes(q) ||
+    (b['도서명'] || '').toLowerCase().includes(q)
+  );
+
+  if (!matched.length) {
+    resultEl.innerHTML = '<div class="msg-error">검색 결과가 없습니다. 도서 목록을 먼저 불러와 주세요.</div>';
+    formEl.style.display = 'none';
+    return;
+  }
+
+  resultEl.innerHTML = matched.slice(0, 10).map(b =>
+    `<div style="padding:8px 12px;border:1px solid #ddd;border-radius:6px;margin:4px 0;cursor:pointer;background:#fff;"
+         onclick="selectEditBook('${(b['청구기호']||'').replace(/'/g,"\\'")}')">
+      <strong>${b['청구기호']}</strong> — ${b['도서명']} <span style="color:#888;font-size:0.85rem;">(${b['저자']||''})</span>
+    </div>`
+  ).join('');
+}
+
+function selectEditBook(callNum) {
+  const book = adminBooks.find(b => (b['청구기호']||'').trim() === callNum.trim());
+  if (!book) return;
+  editTargetBook = book;
+
+  document.getElementById('editSelectedCallNum').textContent = book['청구기호'];
+  document.getElementById('editSelectedTitle').textContent = book['도서명'];
+  document.getElementById('editTitle').value = book['도서명'] || '';
+  document.getElementById('editAuthor').value = book['저자'] || '';
+  document.getElementById('editPublisher').value = book['출판사'] || '';
+  document.getElementById('editYear').value = book['출판연도'] || '';
+  document.getElementById('editMemo').value = book['메모'] || '';
+
+  // 분류 선택
+  const catSel = document.getElementById('editCat');
+  catSel.innerHTML = '<option value="">선택</option>';
+  CONFIG.CATEGORIES.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.code; opt.textContent = `${c.code} ${c.name}`;
+    if (c.code === book['분류코드']) opt.selected = true;
+    catSel.appendChild(opt);
+  });
+
+  // 상태 선택
+  const statusSel = document.getElementById('editStatus');
+  for (const opt of statusSel.options) {
+    opt.selected = opt.value === book['상태'];
+  }
+
+  document.getElementById('editSearchResult').innerHTML = '';
+  document.getElementById('editSearch').value = '';
+  document.getElementById('editForm').style.display = 'block';
+  document.getElementById('editBookMsg').innerHTML = '';
+}
+
+async function updateBook() {
+  if (!editTargetBook) return;
+  const btn = document.getElementById('editBookBtn');
+  btn.disabled = true; btn.textContent = '저장 중...';
+
+  const data = {
+    action: 'updateBook',
+    청구기호: editTargetBook['청구기호'],
+    도서명: document.getElementById('editTitle').value.trim(),
+    저자: document.getElementById('editAuthor').value.trim(),
+    출판사: document.getElementById('editPublisher').value.trim(),
+    출판연도: document.getElementById('editYear').value.trim(),
+    분류코드: document.getElementById('editCat').value,
+    상태: document.getElementById('editStatus').value,
+    메모: document.getElementById('editMemo').value.trim()
+  };
+
+  try {
+    await fetch(CONFIG.APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    document.getElementById('editBookMsg').innerHTML = '<div class="msg-success">✅ 도서 정보가 변경되었습니다!</div>';
+    // adminBooks 캐시 업데이트
+    const idx = adminBooks.findIndex(b => b['청구기호'] === editTargetBook['청구기호']);
+    if (idx >= 0) {
+      adminBooks[idx] = { ...adminBooks[idx], ...data };
+    }
+    editTargetBook = null;
+    document.getElementById('editForm').style.display = 'none';
+  } catch (e) {
+    document.getElementById('editBookMsg').innerHTML = '<div class="msg-error">오류가 발생했습니다.</div>';
+  }
+  btn.disabled = false; btn.textContent = '변경 저장';
+}
+
 // ===== 현황 탭 =====
 async function loadStatusTab() {
   try {
