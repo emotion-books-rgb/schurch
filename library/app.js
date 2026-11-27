@@ -53,7 +53,7 @@ function getCategoryName(code) {
 function showTab(id, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  ['tab-loan', 'tab-add', 'tab-status'].forEach(t => {
+  ['tab-loan', 'tab-add', 'tab-edit', 'tab-status'].forEach(t => {
     const el = document.getElementById(t);
     if (el) el.classList.toggle('hidden', t !== id);
   });
