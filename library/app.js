@@ -490,6 +490,7 @@ function selectEditBook(callNum) {
 
   document.getElementById('editSelectedCallNum').textContent = book['청구기호'];
   document.getElementById('editSelectedTitle').textContent = book['도서명'];
+  document.getElementById('editCallNum').value = book['청구기호'] || '';
   document.getElementById('editTitle').value = book['도서명'] || '';
   document.getElementById('editAuthor').value = book['저자'] || '';
   document.getElementById('editPublisher').value = book['출판사'] || '';
@@ -523,9 +524,11 @@ async function updateBook() {
   const btn = document.getElementById('editBookBtn');
   btn.disabled = true; btn.textContent = '저장 중...';
 
+  const newCallNum = document.getElementById('editCallNum').value.trim();
   const data = {
     action: 'updateBook',
     청구기호: editTargetBook['청구기호'],
+    새청구기호: newCallNum,
     도서명: document.getElementById('editTitle').value.trim(),
     저자: document.getElementById('editAuthor').value.trim(),
     출판사: document.getElementById('editPublisher').value.trim(),
@@ -546,7 +549,7 @@ async function updateBook() {
     // adminBooks 캐시 업데이트
     const idx = adminBooks.findIndex(b => b['청구기호'] === editTargetBook['청구기호']);
     if (idx >= 0) {
-      adminBooks[idx] = { ...adminBooks[idx], ...data };
+      adminBooks[idx] = { ...adminBooks[idx], ...data, 청구기호: newCallNum || editTargetBook['청구기호'] };
     }
     editTargetBook = null;
     document.getElementById('editForm').style.display = 'none';

@@ -64,6 +64,10 @@ function updateBook(data) {
           sh.getRange(i + 1, col + 1).setValue(value);
         }
       }
+      // 청구기호 변경 (컬럼 A)
+      if (data.새청구기호 && data.새청구기호.trim() !== String(data.청구기호).trim()) {
+        sh.getRange(i + 1, 1).setValue(data.새청구기호.trim());
+      }
       return ok('도서 정보 변경 완료');
     }
   }
