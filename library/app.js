@@ -599,3 +599,80 @@ async function loadStatusTab() {
     console.error('현황 로드 오류', e);
   }
 }
+
+// ===== 독자후기 =====
+let reviewRating = 0;
+
+function toggleReviewForm() {
+  const form = document.getElementById('reviewForm');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  if (form.style.display === 'block') {
+    document.getElementById('reviewName').value = '';
+    document.getElementById('reviewBook').value = '';
+    document.getElementById('reviewText').value = '';
+    document.getElementById('reviewMsg').innerHTML = '';
+    reviewRating = 0;
+    updateStars();
+  }
+}
+
+function setRating(n) {
+  reviewRating = n;
+  updateStars();
+}
+
+function updateStars() {
+  document.querySelectorAll('#starRating span').forEach((s, i) => {
+    s.classList.toggle('active', i < reviewRating);
+  });
+}
+
+async function loadReviews() {
+  try {
+    const data = await fetchSheet(CONFIG.SHEETS.REVIEWS);
+    const el = document.getElementById('reviewList');
+    if (!data.length) {
+      el.innerHTML = '<div class="review-empty">아직 후기가 없습니다. 첫 번째 후기를 남겨보세요! 📖</div>';
+      return;
+    }
+    el.innerHTML = [...data].reverse().slice(0, 20).map(r => `
+      <div class="review-card">
+        <div class="review-card-top">
+          <div>
+            <span class="review-name">${r['이름'] || '익명'}</span>
+            <span class="review-book"> · 『${r['도서명'] || ''}』</span>
+          </div>
+          <span class="review-date">${(r['작성일'] || '').slice(0, 10)}</span>
+        </div>
+        <div class="review-stars">${'★'.repeat(parseInt(r['별점']) || 0)}${'☆'.repeat(5 - (parseInt(r['별점']) || 0))}</div>
+        <div class="review-text">${(r['후기'] || '').replace(/\n/g, '<br>')}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    document.getElementById('reviewList').innerHTML = '<div class="review-empty">후기를 불러올 수 없습니다.</div>';
+  }
+}
+
+async function submitReview() {
+  const name = document.getElementById('reviewName').value.trim();
+  const book = document.getElementById('reviewBook').value.trim();
+  const text = document.getElementById('reviewText').value.trim();
+  if (!name || !book || !text) {
+    document.getElementById('reviewMsg').innerHTML = '<div class="msg-error">이름, 도서명, 후기를 입력해주세요.</div>';
+    return;
+  }
+  const btn = document.getElementById('reviewSubmitBtn');
+  btn.disabled = true; btn.textContent = '등록 중...';
+  try {
+    await fetch(CONFIG.APPS_SCRIPT_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'addReview', 이름: name, 도서명: book, 별점: reviewRating, 후기: text, 작성일: new Date().toISOString().slice(0,10) })
+    });
+    document.getElementById('reviewMsg').innerHTML = '<div class="msg-success">✅ 후기가 등록되었습니다!</div>';
+    setTimeout(() => { toggleReviewForm(); loadReviews(); }, 1200);
+  } catch (e) {
+    document.getElementById('reviewMsg').innerHTML = '<div class="msg-error">오류가 발생했습니다.</div>';
+  }
+  btn.disabled = false; btn.textContent = '등록';
+}

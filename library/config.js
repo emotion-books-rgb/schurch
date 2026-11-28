@@ -8,7 +8,8 @@ const CONFIG = {
   SHEETS: {
     BOOKS: '도서목록',
     LOANS: '대출관리',
-    MEMBERS: '회원목록'
+    MEMBERS: '회원목록',
+    REVIEWS: '독자후기'
   },
   CATEGORIES: [
     { code: '신', name: '신앙생활' },

@@ -16,6 +16,7 @@ function doPost(e) {
     if (action === 'rejectLoan') return rejectLoan(data);
     if (action === 'returnBook') return returnBook(data);
     if (action === 'updateBook') return updateBook(data);
+    if (action === 'addReview') return addReview(data);
 
     return ok('unknown action');
   } catch (err) {
@@ -200,4 +201,15 @@ function error(msg) {
 function doGet(e) {
   return ContentService.createTextOutput(JSON.stringify({ status: 'ok', message: '도서관 API 정상' }))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function addReview(data) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  let sh = ss.getSheetByName('독자후기');
+  if (!sh) {
+    sh = ss.insertSheet('독자후기');
+    sh.appendRow(['이름', '도서명', '별점', '후기', '작성일']);
+  }
+  sh.appendRow([data.이름, data.도서명, data.별점, data.후기, data.작성일]);
+  return ok('후기 등록 완료');
 }
