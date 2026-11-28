@@ -627,15 +627,16 @@ function updateStars() {
   });
 }
 
-async function loadReviews() {
+async function loadReviews(limit = 20) {
   try {
     const data = await fetchSheet(CONFIG.SHEETS.REVIEWS);
     const el = document.getElementById('reviewList');
+    if (!el) return;
     if (!data.length) {
       el.innerHTML = '<div class="review-empty">아직 후기가 없습니다. 첫 번째 후기를 남겨보세요! 📖</div>';
       return;
     }
-    el.innerHTML = [...data].reverse().slice(0, 20).map(r => `
+    el.innerHTML = [...data].reverse().slice(0, limit).map(r => `
       <div class="review-card">
         <div class="review-card-top">
           <div>

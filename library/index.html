@@ -25,6 +25,15 @@
   </div>
 
   <main>
+    <!-- 독자후기 미리보기 -->
+    <div class="review-section">
+      <div class="review-header">
+        <h2>✍️ 독자 후기</h2>
+        <a href="mybooks.html" class="btn-review-write">후기 작성하기 →</a>
+      </div>
+      <div id="reviewList" class="review-list"></div>
+    </div>
+
     <!-- 통계 -->
     <div class="stats-row" id="statsRow">
       <div class="stat-card">
@@ -99,6 +108,7 @@
   <script src="app.js"></script>
   <script>
     loadBooks();
+    loadReviews(3);
   </script>
 </body>
 </html>
