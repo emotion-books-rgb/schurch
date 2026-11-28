@@ -393,7 +393,14 @@ async function suggestNextSerial(cat) {
     const nums = books
       .map(b => b['청구기호'] || '')
       .filter(c => c.startsWith(prefix))
-      .map(c => { const parts = c.split('/'); return parseInt(parts[1]) || 0; });
+      .map(c => {
+        const parts = c.split('/');
+        // 새 형식: 분류/번호/성 → parts[1]이 숫자
+        // 구 형식: 분류/성/번호 → parts[2]가 숫자
+        const n1 = parseInt(parts[1]) || 0;
+        const n2 = parseInt(parts[2]) || 0;
+        return Math.max(n1, n2);
+      });
     const next = nums.length ? Math.max(...nums) + 1 : 1;
     const serialEl = document.getElementById('bookSerial');
     if (serialEl && !serialEl.value) {
