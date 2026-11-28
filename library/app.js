@@ -372,12 +372,12 @@ function updateCallNum() {
   const author = document.getElementById('bookAuthorCode')?.value || '';
   const serial = document.getElementById('bookSerial')?.value || '';
   const callNum = document.getElementById('bookCallNum');
-  if (callNum) callNum.value = cat && author && serial ? `${cat}/${serial.padStart(3,'0')}/${author}` : '';
-  // 분류+저자 첫글자 모두 입력됐을 때 다음 번호 자동 추천
-  if (cat && author && !serial) suggestNextSerial(cat, author);
+  if (callNum) callNum.value = cat && serial ? `${cat}/${serial.padStart(3,'0')}${author ? '/' + author : ''}` : '';
+  // 분류 선택 시 바로 다음 번호 자동 추천
+  if (cat && !serial) suggestNextSerial(cat);
 }
 
-async function suggestNextSerial(cat, author) {
+async function suggestNextSerial(cat) {
   try {
     const books = await fetchSheet(CONFIG.SHEETS.BOOKS);
     const prefix = `${cat}/`;
@@ -390,9 +390,6 @@ async function suggestNextSerial(cat, author) {
     if (serialEl && !serialEl.value) {
       serialEl.value = String(next).padStart(3, '0');
       updateCallNum();
-      // 추천 안내 표시
-      document.getElementById('addBookMsg').innerHTML =
-        `<div style="padding:8px 12px;background:#e8f0e8;border-radius:6px;font-size:0.85rem;color:#3a5a3a;">💡 다음 일련번호 <strong>${String(next).padStart(3,'0')}</strong> 자동 입력됨</div>`;
     }
   } catch (e) { /* 무시 */ }
 }
