@@ -372,7 +372,7 @@ function updateCallNum() {
   const author = document.getElementById('bookAuthorCode')?.value || '';
   const serial = document.getElementById('bookSerial')?.value || '';
   const callNum = document.getElementById('bookCallNum');
-  if (callNum) callNum.value = cat && author && serial ? `${cat}/${author}/${serial.padStart(3,'0')}` : '';
+  if (callNum) callNum.value = cat && author && serial ? `${cat}/${serial.padStart(3,'0')}/${author}` : '';
   // 분류+저자 첫글자 모두 입력됐을 때 다음 번호 자동 추천
   if (cat && author && !serial) suggestNextSerial(cat, author);
 }
@@ -380,11 +380,11 @@ function updateCallNum() {
 async function suggestNextSerial(cat, author) {
   try {
     const books = await fetchSheet(CONFIG.SHEETS.BOOKS);
-    const prefix = `${cat}/${author}/`;
+    const prefix = `${cat}/`;
     const nums = books
       .map(b => b['청구기호'] || '')
       .filter(c => c.startsWith(prefix))
-      .map(c => parseInt(c.replace(prefix, '')) || 0);
+      .map(c => { const parts = c.split('/'); return parseInt(parts[1]) || 0; });
     const next = nums.length ? Math.max(...nums) + 1 : 1;
     const serialEl = document.getElementById('bookSerial');
     if (serialEl && !serialEl.value) {
@@ -403,7 +403,7 @@ async function addBook() {
   const callNum = document.getElementById('bookCallNum').value.trim();
   const cat = document.getElementById('bookCat').value;
   if (!title || !author || !callNum) {
-    document.getElementById('addBookMsg').innerHTML = '<div class="msg-error">분류, 저자 첫글자, 일련번호, 도서명, 저자를 입력해주세요.</div>';
+    document.getElementById('addBookMsg').innerHTML = '<div class="msg-error">분류, 저자 첫 성, 일련번호, 도서명, 저자를 입력해주세요.</div>';
     return;
   }
 
