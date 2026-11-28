@@ -388,7 +388,7 @@ function updateCallNum() {
 
 async function suggestNextSerial(cat) {
   try {
-    const books = await fetchSheet(CONFIG.SHEETS.BOOKS);
+    const books = adminBooks.length ? adminBooks : await fetchSheet(CONFIG.SHEETS.BOOKS);
     const prefix = `${cat}/`;
     const nums = books
       .map(b => b['청구기호'] || '')
