@@ -4,7 +4,7 @@
 
 const CONFIG = {
   SHEET_ID: '1TLzXn5xCCWaYQoe7_ylqAULPwzJA6QLVkucQQpZZSR4',
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzRCIXPmHHTGTA0-dmHRKcJHfcSR3QFDyvMlbmW2sxTLcqq0m-a7iSoX2aqGbY2bSsSXA/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyTixifr5YtU-1FNGc9X6eBYWOqcXGGyS8J82RBxoyqbDDSBjVBrjvdQuf0u5GqyIhVAw/exec',
   SHEETS: {
     BOOKS: '도서목록',
     LOANS: '대출관리',
