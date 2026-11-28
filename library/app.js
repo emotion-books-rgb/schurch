@@ -639,10 +639,7 @@ async function loadReviews(limit = 20) {
     el.innerHTML = [...data].reverse().slice(0, limit).map(r => `
       <div class="review-card">
         <div class="review-card-top">
-          <div>
-            <span class="review-name">${r['이름'] || '익명'}</span>
-            <span class="review-book"> · 『${r['도서명'] || ''}』</span>
-          </div>
+          <span class="review-book">『${r['도서명'] || ''}』</span>
           <span class="review-date">${(r['작성일'] || '').slice(0, 10)}</span>
         </div>
         <div class="review-stars">${'★'.repeat(parseInt(r['별점']) || 0)}${'☆'.repeat(5 - (parseInt(r['별점']) || 0))}</div>
