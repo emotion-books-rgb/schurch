@@ -367,14 +367,23 @@ async function adminPost(data) {
 }
 
 // ===== 도서 등록 (admin.html) =====
+function onCatChange() {
+  // 분류 바뀌면 일련번호 초기화 후 자동추천
+  const serialEl = document.getElementById('bookSerial');
+  if (serialEl) serialEl.value = '';
+  const callNumEl = document.getElementById('bookCallNum');
+  if (callNumEl) callNumEl.value = '';
+  document.getElementById('addBookMsg').innerHTML = '';
+  const cat = document.getElementById('bookCat')?.value || '';
+  if (cat) suggestNextSerial(cat);
+}
+
 function updateCallNum() {
   const cat = document.getElementById('bookCat')?.value || '';
   const author = document.getElementById('bookAuthorCode')?.value || '';
   const serial = document.getElementById('bookSerial')?.value || '';
   const callNum = document.getElementById('bookCallNum');
   if (callNum) callNum.value = cat && serial ? `${cat}/${serial.padStart(3,'0')}${author ? '/' + author : ''}` : '';
-  // 분류 선택 시 바로 다음 번호 자동 추천
-  if (cat && !serial) suggestNextSerial(cat);
 }
 
 async function suggestNextSerial(cat) {
